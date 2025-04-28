@@ -44,7 +44,7 @@ This artifact provides the core functionality of the simulator and the what-if a
 ├── readme.md
 ├── requirements.txt # Python dependencies
 ├── style.yapf # Configuration file for code formatting, defining the code style
-├── run_all.sh # Convienient script used to reproduce all the results for each trace
+└── run_all.sh # Convenient script used to reproduce all the results for each trace
 ```
 
 `./analyzer/wia.py` is the entry-point for the what-if analysis. It takes in one job's trace and outputs various slowdown estimatation through simulation. We document in detail what each output field mean in the `AnalyzerResult` class in `./analyzer/metatypes.py`.
