@@ -1,0 +1,8 @@
+trial_name: AR
+run_id: 0
+dp_size: 4
+dsp_size: 1
+pp_size: 4
+tp_size: 4
+vpp_size: 1
+world_size: 64
