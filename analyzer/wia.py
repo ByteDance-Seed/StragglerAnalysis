@@ -185,7 +185,7 @@ def parse_trace(job_meta: JobMeta, trace, verbose=False):
     with RecordTime('setup_dependency', print_res=verbose):
         dep_on, comm_groups, op2gid, need_dp_sync = setup_dependency(df, job_meta.dsp_size)
     df['launch_delay'] = 0
-    df = calc_launch_delay(df, dep_on) # optinal and can be skipped. only used for simulation error esitmation.
+    df = calc_launch_delay(df, dep_on)  # optinal and can be skipped. only used for simulation error esitmation.
     df = get_transfer_time(df, op2gid, need_dp_sync)
     df.reset_index(drop=True, inplace=True)
     set_op_id_(df)
@@ -445,6 +445,7 @@ def main():
     parser.add_argument('--decompose-thres', type=float, default=1.03)
     parser.add_argument('--dump-dir', default='./sim-result', help='directory to dump the analysis result')
     parser.add_argument('--metadata', help='path to a yaml file containing metadata for the trial', required=True)
+    parser.add_argument('--verbose', action='store_true', help='verbose mode')
     args = parser.parse_args()
     assert args.metadata.endswith(".yaml") or args.metadata.endswith(
         ".yml"), f"unsupported metadata file {args.metadata}"
@@ -455,7 +456,7 @@ def main():
                          root=args.root,
                          steps=parse_step(args.step),
                          decompose_threshold=args.decompose_thres,
-                         verbose=True).analyze(job_meta)
+                         verbose=args.verbose).analyze(job_meta)
 
     dump_dir = args.dump_dir
     os.makedirs(f'{dump_dir}', exist_ok=True)

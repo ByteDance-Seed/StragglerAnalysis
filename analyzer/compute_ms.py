@@ -77,8 +77,7 @@ def main():
     output = f'{args.dump_dir}/ms-{args.trial}.json'
 
     json.dump(ret[0], open(output, 'w'), indent=4)
-    AnalysisLogger().info(f'Ms={Ms*100:.1f}%')
-    AnalysisLogger().info(f'Detailed result saved to {output}')
+    AnalysisLogger().info(f'Ms={Ms*100:.1f}%. Detailed result saved to {output}')
 
 
 if __name__ == '__main__':

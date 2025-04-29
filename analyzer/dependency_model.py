@@ -48,8 +48,8 @@ def setup_post_compute_dependency(deps, df_mp_group, ovlp_dp: bool, use_dp: bool
     pp = df_mp_group.stage.max() + 1
     for stage in range(pp):
         df_stage = df_mp_group[df_mp_group.stage.eq(stage)]
-        df_comp = df_stage[df_stage.optype.isin(
-            [OpType.forward_compute, OpType.backward_compute])].sort_values(['start_ts', 'seq_id', 'optype'])
+        df_comp = df_stage[df_stage.optype.isin([OpType.forward_compute, OpType.backward_compute
+                                                ])].sort_values(['start_ts', 'seq_id', 'optype'])
         last_compute = df_comp.loc[df_comp.end_ts.idxmax()].op
         deps.setdefault(f'gc_0_{stage}', []).extend([last_compute])
         t1 = df_stage[df_stage.optype.eq(OpType.grads_reduce_scatter)].seq_id.max() + 1
@@ -96,8 +96,8 @@ def setup_params_ag_deps(deps, df_mp_group):
     for stage in range(df_mp_group.stage.max() + 1):
         df_stage = df_mp_group[df_mp_group.stage.eq(stage)]
         ag_cnt = len(df_stage[df_stage.optype.eq(OpType.params_all_gather)])
-        df_comp = df_stage[df_stage.optype.isin(
-            [OpType.forward_compute, OpType.backward_compute])].sort_values(['start_ts', 'seq_id', 'optype'])
+        df_comp = df_stage[df_stage.optype.isin([OpType.forward_compute, OpType.backward_compute
+                                                ])].sort_values(['start_ts', 'seq_id', 'optype'])
         mc_assigned = set()
         for i in reversed(range(ag_cnt)):
             it = df_stage[df_stage.optype.eq(OpType.params_all_gather) & df_stage.seq_id.eq(i)].iloc[0]
@@ -125,8 +125,8 @@ def setup_grads_rs_deps(deps, df_mp_group):
 
     for stage in range(pp):
         df_stage = df_mp_group[df_mp_group.stage.eq(stage)]
-        df_comp = df_stage[df_stage.optype.isin(
-            [OpType.forward_compute, OpType.backward_compute])].sort_values(['start_ts', 'seq_id', 'optype'])
+        df_comp = df_stage[df_stage.optype.isin([OpType.forward_compute, OpType.backward_compute
+                                                ])].sort_values(['start_ts', 'seq_id', 'optype'])
 
         n_tot_rs = df_stage.optype.eq(OpType.grads_reduce_scatter).sum()
 
@@ -136,9 +136,7 @@ def setup_grads_rs_deps(deps, df_mp_group):
             mc, rs_op = it.mc, it.op
             if mc in mc_assigned:
                 continue
-            last_mb = df_comp[
-                df_comp.mc.eq(mc) &
-                df_comp.optype.isin([OpType.backward_compute])].end_ts.idxmax()
+            last_mb = df_comp[df_comp.mc.eq(mc) & df_comp.optype.isin([OpType.backward_compute])].end_ts.idxmax()
             deps.setdefault(rs_op, []).append(df_comp.loc[last_mb].op)
             mc_assigned.add(mc)
 
@@ -207,8 +205,8 @@ def get_peer_op_and_match_compute(df_mp_group: pd.DataFrame, EPS=5e-4):
     for stage in range(df_mp_group.stage.max() + 1):
         df_stage = df_mp_group[df_mp_group.stage.eq(stage)]
         df_comm = df_stage[df_stage.optype.isin(OpType.p2p_optypes())].sort_values(['start_ts', 'seq_id', 'optype'])
-        df_comp = df_stage[df_stage.optype.isin(
-            [OpType.forward_compute, OpType.backward_compute])].sort_values(['start_ts', 'seq_id', 'optype'])
+        df_comp = df_stage[df_stage.optype.isin([OpType.forward_compute, OpType.backward_compute
+                                                ])].sort_values(['start_ts', 'seq_id', 'optype'])
 
         df_comm = df_comm.sort_values(['start_ts', 'seq_id', 'optype'])
         # due to implementation issues, our profiler may record extra send/recv ops that weren't launched
@@ -339,8 +337,8 @@ def setup_pp_dependency(df: pd.DataFrame, dsp_size: int):
     for stage in range(df.stage.max() + 1):
         df_stage = df_mp_group[df_mp_group.stage.eq(stage)].copy()
         df_comm = df_stage[df_stage.optype.isin(OpType.p2p_optypes())].sort_values(['start_ts', 'seq_id', 'optype'])
-        df_comp = df_stage[df_stage.optype.isin(
-            [OpType.forward_compute, OpType.backward_compute])].sort_values(['start_ts', 'seq_id', 'optype'])
+        df_comp = df_stage[df_stage.optype.isin([OpType.forward_compute, OpType.backward_compute
+                                                ])].sort_values(['start_ts', 'seq_id', 'optype'])
         setup_chain_deps(deps, df_comp.op.tolist())
 
         df_comm['stream'] = df_comm['optype'].map({
@@ -425,7 +423,10 @@ def setup_dependency(df: pd.DataFrame, dsp_size: int):
     """
     p2p_ops = [i for i in df.optype.unique() if i in OpType.p2p_optypes()]
     expected_ops = set([
-        OpType.forward_send, OpType.forward_recv, OpType.backward_send, OpType.backward_recv,
+        OpType.forward_send,
+        OpType.forward_recv,
+        OpType.backward_send,
+        OpType.backward_recv,
     ])
     assert set(p2p_ops).issubset(expected_ops), f"Not supported ops: {set(p2p_ops) - expected_ops}"
 

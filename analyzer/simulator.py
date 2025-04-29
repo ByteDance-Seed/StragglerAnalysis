@@ -87,11 +87,17 @@ def simulate(dep_on,
              op2dfidx=None,
              need_df=True,
              df_overwrite: pd.DataFrame = None) -> pd.DataFrame:
-    """Simulates the timeline ('start_ts', 'end_ts', 'duration' for each op) with topological sort, 
-    based on dependency model and the given op execution time in the 'duration' or 'transfer_duration' column.
+    """Simulates the timeline with topological sort, given the input of: 
+    - "Dependency model": stored in `dep_on`, `comm_groups`, `op2gid`, `need_dp_sync`
+    - "OpDuration": the desired new duration for each operation (e.g., mean/median values), stored in 'duration' column 
+    for computation ops and 'transfer_duration' column for communication ops in `df`.
+
+    , and produces the output:
+    - 'start_ts', 'end_ts' for each op, and 'duration' for communication ops, stored in columns of `df` or a new DataFrame.
+
     For performance reasons, we simulate in a "SIMD" way, where different DP ranks and steps are treated 
     as multiple data (MD) and processed together, since they share the same dependency model. 
-    One special treatment is required for DP-level commnucation, where we need to ensure synchronization.
+    One special treatment is required for DP-level commnucation, where we need to ensure they are synchronized.
 
     Parameters:
         dep_on (Dict): A dictionary for in-rank dependencies.

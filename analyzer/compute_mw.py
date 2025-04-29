@@ -121,8 +121,7 @@ def main():
     ret[0]['Mw'] = Mw
     output = f'{args.dump_dir}/mw-{args.trial}.json'
     json.dump(ret[0], open(output, 'w'), indent=4)
-    AnalysisLogger().info(f'Mw={Mw*100:.1f}%')
-    AnalysisLogger().info(f'Detailed result saved to {output}')
+    AnalysisLogger().info(f'Mw={Mw*100:.1f}%. Detailed result saved to {output}')
 
 
 if __name__ == '__main__':

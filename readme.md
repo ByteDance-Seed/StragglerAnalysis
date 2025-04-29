@@ -27,10 +27,10 @@
 
 ## Introduction
 This artifact provides the core functionality of the simulator and the what-if analysis proposed in the paper, along with three sample traces to demonstrate the usage of the tool. The expected output includes the following for each sample trace:
-- Estimated slowdown $S$ (i.e., Eq. (1))
-- Slowdown $S_t$ attributed to each operation type $t$ (i.e., Eq. (2))
-- Slowdown $S_w$ attributed to each worker $w$ (i.e., Eq. (4))
-- Characterization metrics $M_W$(i.e., Eq. (5)) and $M_S$ for individual worker issues and stage partitioning imbalance, respectively
+- Estimated slowdown $S$ (i.e., Eq. 1)
+- Slowdown $S_t$ attributed to each operation type $t$ (i.e., Eq. 2)
+- Slowdown $S_w$ attributed to each worker $w$ (i.e., Eq. 4)
+- Characterization metrics $M_W$(i.e., Eq. 5) and $M_S$ for individual worker issues and stage partitioning imbalance, respectively
 - A heatmap visualization as in Fig. 14.
 - A timeline of the simulated ideal trace visualizable in Perfetto.
 
@@ -38,10 +38,8 @@ This artifact provides the core functionality of the simulator and the what-if a
 ```bash
 ├── analyzer  # Analyzer codes
 ├── data # Stores input data for analysis and corresponding expected results
-├── logs
-│   └── case-study-analysis # Reproduced results should be generated here and match those in the ../data directory
 ├── format.sh # Script for code formatting
-├── readme.md
+├── README.md
 ├── requirements.txt # Python dependencies
 ├── style.yapf # Configuration file for code formatting, defining the code style
 └── run_all.sh # Convenient script used to reproduce all the results for each trace
@@ -67,15 +65,16 @@ Several files are included for each trace:
 - `result-<trace_name>.json`: expected what-if analysis result.
 - `heatmap-<trace_name>.png`: expected heatmap generated with the analysis result.
 - `ms-<trace_name>.json`: the $M_S$ metric as in Section 5.2 of the paper.
-- `mw-<trace_name>.json`: the $M_W$ metric as in Eq. (5) of the paper.
+- `mw-<trace_name>.json`: the $M_W$ metric as in Eq. 5 of the paper.
 - `timeline-<trace_name>.json.gz`: the timeline of the original trace that can be visualized in Perfetto.
 - `ideal-timeline-<trace_name>.json.gz`: the expected timeline of the simulated ideal that can be visualized in Perfetto. One could contrast it with the original timeline to have a more intuitive understanding on the simulation.
 
 ## Evaluation Steps
 ### 1.Install dependencies.
-  The code is tested with Python 3.11. To install the necessary dependencies, run the following command:
+  The code was tested with Python 3.11, but should work on other Python versions. To install the necessary dependencies, run the following command:
   ```bash
   pip install -r requirements.txt
+  export PYTHONPATH="`pwd`:$PYTHONPATH"
   ```
 
 ### 2. Execute the reproduction script.
