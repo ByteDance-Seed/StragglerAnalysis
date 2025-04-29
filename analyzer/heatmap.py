@@ -94,6 +94,7 @@ def plot_heatmap(analysis_result: dict,
     ax.set_ylabel('PP rank')
     if save:
         plt.savefig(save, bbox_inches='tight')
+        print(f'Heatmap saved to {save}')
 
 
 if __name__ == '__main__':

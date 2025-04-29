@@ -63,8 +63,7 @@ class AnalyzerResult:
     step_t_nodelay: Dict[int, float]
 
     # step time simulated by both removing all launch delays and replacing duration with means/medians
-    step_t_noblk: Dict[int, float] 
-
+    step_t_noblk: Dict[int, float]
 
     ########## slowdowns ##########
     # effect of launch-delay, measured by step_t_base.mean() / step_t_nodelay.mean()
@@ -76,7 +75,6 @@ class AnalyzerResult:
     # per-step slowdown
     blocking_step_slowdown: Dict[int, float]
     launch_step_slowdown: Dict[int, float]
-
 
     ########## Attribution to DP rank, PP rank and OpType ##########
     # blocking_deompose_by_X[i] := step_t_nodelay_but_Xi.mean() / step_t_noblk.mean(),

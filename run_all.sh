@@ -14,21 +14,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-rm -rf ./logs/case-study-analysis && mkdir -p ./logs/case-study-analysis # THIS IS IMPORTANT!
-for trial_name in 'SE' 'ST' 'AR'; do # sequence-imbalance, stage-imbalance, artificial-slowdown
-    echo ">>>>>>>>>>>running analysis for $trial_name"
-    python3 ./analyzer/wia.py --metadata ./data/meta-$trial_name.yaml --trace ./data/trace-$trial_name.parquet --dump-dir ./logs/case-study-analysis --root ./logs/case-study-analysis &> ./logs/case-study-analysis/$trial_name.log
-    diff ./logs/case-study-analysis/$trial_name.json ./data/result-$trial_name.json
-    python3 ./analyzer/heatmap.py --trial $trial_name --dump-dir ./logs/case-study-analysis --analysis-result ./data/result-$trial_name.json >> ./logs/case-study-analysis/$trial_name.log 2>&1
-    diff ./logs/case-study-analysis/heatmap-$trial_name.png ./data/heatmap-$trial_name.png
+[ -d "./logs/case-study-analysis" ] && rm -rf ./logs/case-study-analysis
+mkdir -p ./logs/case-study-analysis
+for trace_name in 'SE' 'ST' 'AR'; do # sequence-imbalance, stage-imbalance, artificial-slowdown
+    out=./logs/case-study-analysis/$trace_name.log
+    echo ">>>>>>>>>>>running analysis for trace $trace_name. check $out for output logs"
+    echo ">> running wia.py"
+    python ./analyzer/wia.py --metadata ./data/meta-$trace_name.yaml --trace ./data/trace-$trace_name.parquet --dump-dir ./logs/case-study-analysis --root ./logs/case-study-analysis &> $out
+    diff ./logs/case-study-analysis/$trace_name.json ./data/result-$trace_name.json
+    # heatmap
+    echo ">> running heatmap"
+    python ./analyzer/heatmap.py --trial $trace_name --dump-dir ./logs/case-study-analysis --analysis-result ./data/result-$trace_name.json >> $out 2>&1
+    diff ./logs/case-study-analysis/heatmap-$trace_name.png ./data/heatmap-$trace_name.png
     # Ms
-    python3 analyzer/compute_ms.py --trial $trial_name --dump-dir ./logs/case-study-analysis --analysis-result ./data/result-$trial_name.json --root ./logs/case-study-analysis >> ./logs/case-study-analysis/$trial_name.log 2>&1
-    diff ./logs/case-study-analysis/ms-$trial_name.json ./data/ms-$trial_name.json 
+    echo ">> computing Ms"
+    python analyzer/compute_ms.py --trial $trace_name --dump-dir ./logs/case-study-analysis --analysis-result ./data/result-$trace_name.json --root ./logs/case-study-analysis >> $out 2>&1
+    diff ./logs/case-study-analysis/ms-$trace_name.json ./data/ms-$trace_name.json 
     # Mw
-    python3 analyzer/compute_mw.py --trial $trial_name --dump-dir ./logs/case-study-analysis --analysis-result ./data/result-$trial_name.json --root ./logs/case-study-analysis >> ./logs/case-study-analysis/$trial_name.log 2>&1
-    diff ./logs/case-study-analysis/mw-$trial_name.json ./data/mw-$trial_name.json 
+    echo ">> computing Mw"
+    python analyzer/compute_mw.py --trial $trace_name --dump-dir ./logs/case-study-analysis --analysis-result ./data/result-$trace_name.json --root ./logs/case-study-analysis >> $out 2>&1
+    diff ./logs/case-study-analysis/mw-$trace_name.json ./data/mw-$trace_name.json 
     # ideal timelines
-    python3 analyzer/to_timeline.py ./logs/case-study-analysis/dataframe/$trial_name-0-no-blocking.parquet -o ./logs/case-study-analysis --reset-step-start --step-st 0 --step-ed 999999
-    # diff "./logs/case-study-analysis/timeline-$trial_name-0-no-blocking.pkl-0-999999-[':,:,:'].json" ./data/ideal-timeline-$trial_name.json
+    echo ">> dumping timeline"
+    python analyzer/to_timeline.py ./logs/case-study-analysis/dataframe/$trace_name-0-no-blocking.parquet -o ./logs/case-study-analysis --reset-step-start --step-st 0 --step-ed 999999 >> $out 2>&1
+    # diff "./logs/case-study-analysis/timeline-$trace_name-0-no-blocking.pkl-0-999999-[':,:,:'].json" ./data/ideal-timeline-$trace_name.json
 done
 echo "no diff should be printed except for png"
